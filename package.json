@@ -1,0 +1,48 @@
+{
+  "name": "@enescinar/reddit-mcp",
+  "version": "1.0.0",
+  "description": "A Model Context Protocol server that allows interaction with Reddit, enabling posting comments and searching posts.",
+  "type": "module",
+  "main": "build/index.js",
+  "bin": {
+    "reddit-server": "./build/index.js"
+  },
+  "files": [
+    "build",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "server",
+    "reddit",
+    "claude"
+  ],
+  "author": "Enes Cinar",
+  "license": "MIT",
+  "dependencies": {
+    "@ai-sdk/openai": "^1.3.22",
+    "@modelcontextprotocol/sdk": "0.6.0",
+    "dotenv": "^16.4.7",
+    "mcp-evals": "^1.0.18",
+    "snoowrap": "^1.23.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "typescript": "^5.3.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EnesCinr/reddit-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/EnesCinr/reddit-mcp/issues"
+  },
+  "homepage": "https://github.com/EnesCinr/reddit-mcp#readme"
+}
