@@ -1,5 +1,5 @@
 {
-  "name": "@enescinar/reddit-mcp",
+  "name": "@enisze/reddit-mcp",
   "version": "1.0.0",
   "description": "A Model Context Protocol server that allows read-only interaction with Reddit using OAuth2, enabling searching posts and subreddits.",
   "type": "module",
@@ -42,10 +42,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/EnesCinr/reddit-mcp.git"
+    "url": "git+https://github.com/enisze/reddit-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/EnesCinr/reddit-mcp/issues"
+    "url": "https://github.com/enisze/reddit-mcp/issues"
   },
-  "homepage": "https://github.com/EnesCinr/reddit-mcp#readme"
+  "homepage": "https://github.com/enisze/reddit-mcp#readme"
 }
