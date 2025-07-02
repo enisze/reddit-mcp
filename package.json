@@ -5,7 +5,7 @@
   "type": "module",
   "main": "build/index.js",
   "bin": {
-    "reddit-server": "./build/index.js"
+    "reddit-server": "build/index.js"
   },
   "files": [
     "build",
