@@ -2,6 +2,7 @@
   "name": "@enisze/reddit-mcp",
   "version": "1.0.0",
   "description": "A Model Context Protocol server that allows read-only interaction with Reddit using OAuth2, enabling searching posts and subreddits.",
+  "private": false,
   "type": "module",
   "main": "build/index.js",
   "bin": {
