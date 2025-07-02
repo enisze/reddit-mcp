@@ -122,6 +122,7 @@ docker run -e REDDIT_CLIENT_ID=your_client_id \
 
 ## API Documentation
 
+
 ### search_posts
 
 Searches for posts in a Reddit subreddit using OAuth2 authentication.
