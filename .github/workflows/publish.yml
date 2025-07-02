@@ -1,4 +1,4 @@
-name: Publish to NPM2
+name: Publish to NPM
 on:
   release:
     types: [created]
@@ -22,6 +22,6 @@ jobs:
       - name: Build project 🔧
         run: npm run build
       - name: Publish package on NPM �
-        run: npm publish --access public
+        run: npm publish 
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
