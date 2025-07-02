@@ -1,10 +1,10 @@
 # Reddit MCP Server
 
-This MCP server allows Clients to interact with Reddit using OAuth2 authentication, enabling read-only access to search for posts and retrieve subreddit information.
+This MCP server allows Clients to interact with Reddit using OAuth2 authentication, enabling read-only access to search for posts within subreddits.
 
 ## Features
 
-- **Search posts**: Search for posts within specific subreddits with various sorting options
+- **Search posts**: Search for posts within specific subreddits with various sorting options (relevance, hot, top, new, comments)
 - **OAuth2 authentication**: Secure authentication using Reddit's OAuth2 client credentials flow
 - **Read-only access**: Safe, read-only access to Reddit data without requiring user credentials
 
@@ -86,9 +86,6 @@ npm test
 
 # Run API integration tests (requires Reddit credentials)
 npm run test:api
-
-# Test actual comment posting (optional)
-TEST_COMMENTS=true npm run test:api
 ```
 
 ### Running Evaluations

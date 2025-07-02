@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const ConfigSchema = z.object({
     clientId: z.string().min(1, 'Client ID is required'),
     clientSecret: z.string().min(1, 'Client Secret is required'),
-    userAgent: z.string().min(1, 'User Agent is required')
+    userAgent: z.string().min(1, 'User Agent is required'),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;

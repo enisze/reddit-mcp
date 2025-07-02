@@ -1,4 +1,4 @@
-import { Config, PostedComment, RedditError, RedditPost, RedditUser } from './types.js';
+import { Config, RedditError, RedditPost, RedditUser } from './types.js';
 
 interface OAuth2Token {
     access_token: string;
@@ -24,7 +24,6 @@ export class RedditClient {
             return this.accessToken;
         }
 
-        // Get new token using client credentials flow
         const auth = Buffer.from(`${this.config.clientId}:${this.config.clientSecret}`).toString('base64');
         
         const response = await fetch('https://www.reddit.com/api/v1/access_token', {
@@ -112,118 +111,6 @@ export class RedditClient {
         return response.json();
     }
 
-    async postComment({ 
-        subreddit,
-        text,
-        parentId = ''
-    }:{ text: string, subreddit: string, parentId?: string}): Promise<PostedComment> {
-        try {
-            const endpoint = 'comment/post';
-            await this.checkRateLimit(endpoint);
-
-            // Prepare the form data for the comment
-            const formData = new URLSearchParams();
-            formData.append('api_type', 'json');
-            formData.append('text', text);
-            
-            // Parent can be either a link (post) or another comment
-            // If no parentId provided, we can't post a comment (need something to reply to)
-            // if (!parentId) {
-            //     throw new RedditError(
-            //         'Parent ID is required for posting comments. Provide either a post fullname (t3_xxx) or comment fullname (t1_xxx).',
-            //         'missing_parent',
-            //         400
-            //     );
-            // }
-            
-            formData.append('parent', parentId);
-
-            console.error(`Posting comment to parent ${parentId} in r/${subreddit}`);
-
-            const response = await fetch('https://oauth.reddit.com/api/submit', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${await this.getAccessToken()}`,
-                    'User-Agent': this.config.userAgent,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: formData.toString()
-            });
-
-            // Check for rate limiting from Reddit API
-            if (response.status === 429) {
-                const retryAfter = response.headers.get('retry-after');
-                console.error('Reddit API rate limit hit:', {
-                    retryAfter,
-                    endpoint: '/api/comment'
-                });
-                
-                throw new RedditError(
-                    `Reddit API rate limit exceeded. ${retryAfter ? `Retry after ${retryAfter} seconds.` : 'Please wait before making more requests.'}`,
-                    'reddit_rate_limit_exceeded',
-                    429
-                );
-            }
-
-            if (!response.ok) {
-                let errorBody = '';
-                try {
-                    errorBody = await response.text();
-                    console.error('Reddit comment API error response:', {
-                        status: response.status,
-                        statusText: response.statusText,
-                        headers: Object.fromEntries(response.headers.entries()),
-                        body: errorBody
-                    });
-                } catch (e) {
-                    console.error('Could not read error response body');
-                }
-
-                throw new RedditError(
-                    `Reddit comment API error: ${response.statusText}${errorBody ? ` - ${errorBody}` : ''}`,
-                    `api_error_${response.status}`,
-                    response.status
-                );
-            }
-
-            const responseData = await response.json();
-            console.error('Reddit comment API response:', responseData);
-
-            // Handle Reddit's API response format
-            if (responseData.json && responseData.json.errors && responseData.json.errors.length > 0) {
-                const error = responseData.json.errors[0];
-                throw new RedditError(
-                    `Reddit comment error: ${error.join(' ')}`,
-                    'reddit_comment_error',
-                    400
-                );
-            }
-
-            if (responseData.json && responseData.json.data && responseData.json.data.things && responseData.json.data.things.length > 0) {
-                const commentData = responseData.json.data.things[0].data;
-                
-                return {
-                    id: commentData.id,
-                    text: commentData.body || text,
-                    author: commentData.author || '[unknown]',
-                    subreddit: commentData.subreddit || subreddit,
-                    parentId: commentData.parent_id || parentId,
-                    url: `https://reddit.com${commentData.permalink}`,
-                    createdAt: new Date((commentData.created_utc || Date.now() / 1000) * 1000).toISOString()
-                };
-            }
-
-            // Fallback if the response structure is unexpected
-            throw new RedditError(
-                'Unexpected response format from Reddit comment API',
-                'unexpected_response',
-                500
-            );
-
-        } catch (error) {
-            this.handleApiError(error);
-        }
-    }
 
     async searchPosts(query: string, subreddit: string, count: number, sort: string): Promise<{ posts: RedditPost[], users: RedditUser[] }> {
         try {

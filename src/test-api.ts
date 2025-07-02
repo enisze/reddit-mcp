@@ -79,27 +79,6 @@ async function testRedditAPI() {
         }
     }
 
-    // Test 3: Comment posting (optional)
-    const shouldTestComments = process.env.TEST_COMMENTS === 'true';
-    
-    if (shouldTestComments) {
-        console.log('\n💬 Test 3: Post comment to r/test...');
-        try {
-            const comment = await client.postComment({
-                text:
-                'Test comment from reddit-mcp API test',
-                subreddit:
-                'test'
-            }
-            );
-
-            console.log(`✅ Comment posted successfully: ${comment.id}`);
-        } catch (error) {
-            console.error('❌ Comment posting failed:', error);
-        }
-    } else {
-        console.log('\n💬 Test 3: Comment posting skipped (set TEST_COMMENTS=true to enable)');
-    }
 
     console.log('\n🎉 API testing completed!');
 }
