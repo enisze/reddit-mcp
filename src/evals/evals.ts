@@ -1,8 +1,7 @@
 //evals.ts
 
-import { EvalConfig } from 'mcp-evals';
 import { openai } from "@ai-sdk/openai";
-import { grade, EvalFunction } from "mcp-evals";
+import { EvalConfig, EvalFunction, grade } from 'mcp-evals';
 
 const post_commentEval: EvalFunction = {
     name: "post_comment Evaluation",

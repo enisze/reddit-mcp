@@ -38,6 +38,7 @@ ENV REDDIT_CLIENT_ID=your_client_id_here
 ENV REDDIT_CLIENT_SECRET=your_client_secret_here
 ENV REDDIT_USERNAME=your_username_here
 ENV REDDIT_PASSWORD=your_password_here
+ENV REDDIT_USER_AGENT=reddit-mcp-server/1.0.0
 ENV REDDIT_USER_AGENT=reddit-mcp:v1.0.0
 
 # Expose the port the server runs on

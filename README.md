@@ -1,11 +1,12 @@
 # Reddit MCP Server
 
-This MCP server allows Clients to interact with Reddit, enabling posting comments to subreddits and searching for posts.
+This MCP server allows Clients to interact with Reddit using OAuth2 authentication, enabling read-only access to search for posts and retrieve subreddit information.
 
 ## Features
 
-- **Post comments**: Post comments to any subreddit
 - **Search posts**: Search for posts within specific subreddits with various sorting options
+- **OAuth2 authentication**: Secure authentication using Reddit's OAuth2 client credentials flow
+- **Read-only access**: Safe, read-only access to Reddit data without requiring user credentials
 
 ## Quick Start
 
@@ -25,12 +26,10 @@ This MCP server allows Clients to interact with Reddit, enabling posting comment
   "mcpServers": {
     "reddit-mcp": {
       "command": "npx",
-      "args": ["-y", "@enescinar/reddit-mcp"],
+      "args": ["-y", "@enisze/reddit-mcp"],
       "env": {
         "REDDIT_CLIENT_ID": "your_client_id_here",
         "REDDIT_CLIENT_SECRET": "your_client_secret_here",
-        "REDDIT_USERNAME": "your_reddit_username",
-        "REDDIT_PASSWORD": "your_reddit_password",
         "REDDIT_USER_AGENT": "reddit-mcp-server/1.0.0"
       }
     }
@@ -40,24 +39,19 @@ This MCP server allows Clients to interact with Reddit, enabling posting comment
 
 3. Restart Claude Desktop
 
-That's it! Claude can now interact with Reddit through two tools:
-
-- `post_comment`: Post a comment to a subreddit
-- `search_posts`: Search for posts in a subreddit
+That's it! Claude can now search Reddit through the `search_posts` tool.
 
 ## Example Usage
 
 Try asking Claude:
-- "Can you post a comment saying 'Great post!' to the programming subreddit?"
 - "Can you search for posts about 'artificial intelligence' in the MachineLearning subreddit?"
 - "Search for the top 10 posts about 'Claude AI' in the artificial subreddit"
+- "Find recent discussions about 'programming best practices' in the programming subreddit"
 
 ## Environment Variables
 
 - `REDDIT_CLIENT_ID`: Your Reddit app's client ID
 - `REDDIT_CLIENT_SECRET`: Your Reddit app's client secret  
-- `REDDIT_USERNAME`: Your Reddit username
-- `REDDIT_PASSWORD`: Your Reddit password
 - `REDDIT_USER_AGENT`: User agent string (optional, defaults to "reddit-mcp-server/1.0.0")
 
 ## Development
@@ -85,6 +79,18 @@ npm run build
 npm start
 ```
 
+5. Test:
+```bash
+# Run unit tests (no API credentials needed)
+npm test
+
+# Run API integration tests (requires Reddit credentials)
+npm run test:api
+
+# Test actual comment posting (optional)
+TEST_COMMENTS=true npm run test:api
+```
+
 ### Running Evaluations
 
 To test the functionality of the Reddit MCP server:
@@ -95,40 +101,33 @@ npm run eval
 
 This will run a series of evaluations to ensure all tools are working correctly.
 
-## Docker Support
+## Running Evals
 
-You can also run the Reddit MCP server using Docker:
+The evals package loads an MCP client that then runs the index.ts file, so there is no need to rebuild between tests. You can load environment variables by prefixing the npx command. Full documentation can be found [here](https://www.mcpevals.io/docs).
 
-1. Build the Docker image:
 ```bash
-docker build -t reddit-mcp .
+OPENAI_API_KEY=your-key npx mcp-eval src/evals/evals.ts src/index.ts
 ```
 
-2. Run the container:
+## Docker Support
+
+You can also run this MCP server using Docker:
+
 ```bash
+# Build the Docker image
+docker build -t reddit-mcp .
+
+# Run the container with environment variables
 docker run -e REDDIT_CLIENT_ID=your_client_id \
            -e REDDIT_CLIENT_SECRET=your_client_secret \
-           -e REDDIT_USERNAME=your_username \
-           -e REDDIT_PASSWORD=your_password \
-           -e REDDIT_USER_AGENT=reddit-mcp:v1.0.0 \
-           -p 3000:3000 \
            reddit-mcp
 ```
 
 ## API Documentation
 
-### post_comment
-
-Posts a comment to a Reddit subreddit.
-
-**Parameters:**
-- `text` (string, required): The content of your comment (max 10,000 characters)
-- `subreddit` (string, required): The subreddit name (without r/ prefix)
-- `parent_id` (string, optional): ID of the post or comment to reply to
-
 ### search_posts
 
-Searches for posts in a Reddit subreddit.
+Searches for posts in a Reddit subreddit using OAuth2 authentication.
 
 **Parameters:**
 - `query` (string, required): Search query
@@ -139,7 +138,7 @@ Searches for posts in a Reddit subreddit.
 ## Troubleshooting
 
 ### Authentication Issues
-- Make sure your Reddit credentials are correct
+- Make sure your Reddit client ID and secret are correct
 - Ensure your Reddit app is configured as a "script" type
 - Check that your user agent string is descriptive and unique
 
@@ -149,8 +148,40 @@ Searches for posts in a Reddit subreddit.
 
 ### Common Errors
 - "Subreddit not found": Check the subreddit name spelling
-- "Permission denied": Make sure the subreddit allows posting/commenting
-- "Invalid credentials": Verify your Reddit app credentials
+- "OAuth2 authentication failed": Verify your Reddit app credentials
+- "Invalid credentials": Make sure your client ID and secret are correct
+
+## Testing
+
+The project includes comprehensive tests to verify functionality:
+
+### Unit Tests
+Run basic functionality tests without requiring Reddit API credentials:
+```bash
+npm test
+```
+
+These tests verify:
+- Response formatting
+- Type definitions  
+- Data structure handling
+- Error handling logic
+
+### API Integration Tests
+Test actual Reddit API functionality (requires credentials):
+```bash
+npm run test:api
+```
+
+Set up your credentials in `.env` first (copy from `.env.example`).
+
+These tests verify:
+- OAuth2 authentication flow
+- Search functionality
+- API response handling
+- Error handling for various scenarios
+
+See `TEST.md` for detailed testing instructions.
 
 ## License
 

@@ -4,24 +4,12 @@ import { z } from 'zod';
 export const ConfigSchema = z.object({
     clientId: z.string().min(1, 'Client ID is required'),
     clientSecret: z.string().min(1, 'Client Secret is required'),
-    username: z.string().min(1, 'Username is required'),
-    password: z.string().min(1, 'Password is required'),
     userAgent: z.string().min(1, 'User Agent is required')
 });
 
 export type Config = z.infer<typeof ConfigSchema>;
 
 // Tool input schemas
-export const PostCommentSchema = z.object({
-    text: z.string()
-        .min(1, 'Comment text cannot be empty')
-        .max(10000, 'Comment cannot exceed 10000 characters'),
-    subreddit: z.string()
-        .min(1, 'Subreddit name is required')
-        .regex(/^[A-Za-z0-9_]+$/, 'Subreddit name contains invalid characters'),
-    parent_id: z.string().optional()
-});
-
 export const SearchPostsSchema = z.object({
     query: z.string().min(1, 'Search query cannot be empty'),
     subreddit: z.string()
@@ -36,7 +24,6 @@ export const SearchPostsSchema = z.object({
         .default('relevance')
 });
 
-export type PostCommentArgs = z.infer<typeof PostCommentSchema>;
 export type SearchPostsArgs = z.infer<typeof SearchPostsSchema>;
 
 // API Response types
@@ -50,8 +37,11 @@ export interface PostMetrics {
 export interface PostedComment {
     id: string;
     text: string;
+    author: string;
     subreddit: string;
+    parentId?: string;
     url: string;
+    createdAt: string;
 }
 
 export interface RedditPost {

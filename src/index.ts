@@ -2,21 +2,21 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
-  ListToolsRequestSchema,
-  CallToolRequestSchema,
-  Tool,
-  ErrorCode,
-  McpError,
-  TextContent
+    CallToolRequestSchema,
+    ErrorCode,
+    ListToolsRequestSchema,
+    McpError,
+    TextContent,
+    Tool
 } from '@modelcontextprotocol/sdk/types.js';
-import { RedditClient } from './reddit-api.js';
-import { ResponseFormatter } from './formatter.js';
-import {
-  Config, ConfigSchema,
-  PostCommentSchema, SearchPostsSchema,
-  RedditError
-} from './types.js';
 import dotenv from 'dotenv';
+import { ResponseFormatter } from './formatter.js';
+import { RedditClient } from './reddit-api.js';
+import {
+    Config, ConfigSchema,
+    RedditError,
+    SearchPostsSchema
+} from './types.js';
 
 export class RedditServer {
   private server: Server;
@@ -64,30 +64,6 @@ export class RedditServer {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
       tools: [
         {
-          name: 'post_comment',
-          description: 'Post a comment to a Reddit subreddit',
-          inputSchema: {
-            type: 'object',
-            properties: {
-              text: {
-                type: 'string',
-                description: 'The content of your comment',
-                maxLength: 10000
-              },
-              subreddit: {
-                type: 'string',
-                description: 'The subreddit name (without r/ prefix)',
-                pattern: '^[A-Za-z0-9_]+$'
-              },
-              parent_id: {
-                type: 'string',
-                description: 'Optional: ID of the post or comment to reply to'
-              }
-            },
-            required: ['text', 'subreddit']
-          }
-        } as Tool,
-        {
           name: 'search_posts',
           description: 'Search for posts in a Reddit subreddit',
           inputSchema: {
@@ -129,8 +105,6 @@ export class RedditServer {
 
       try {
         switch (name) {
-          case 'post_comment':
-            return await this.handlePostComment(args);
           case 'search_posts':
             return await this.handleSearchPosts(args);
           default:
@@ -143,29 +117,6 @@ export class RedditServer {
         return this.handleError(error);
       }
     });
-  }
-
-  private async handlePostComment(args: unknown) {
-    const result = PostCommentSchema.safeParse(args);
-    if (!result.success) {
-      throw new McpError(
-        ErrorCode.InvalidParams,
-        `Invalid parameters: ${result.error.message}`
-      );
-    }
-
-    const comment = await this.client.postComment(
-      result.data.text,
-      result.data.subreddit,
-      result.data.parent_id
-    );
-
-    return {
-      content: [{
-        type: 'text',
-        text: `Comment posted successfully in r/${comment.subreddit}!\nComment ID: ${comment.id}\nURL: ${comment.url}`
-      }] as TextContent[]
-    };
   }
 
   private async handleSearchPosts(args: unknown) {
@@ -244,8 +195,6 @@ dotenv.config();
 const config = {
   clientId: process.env.REDDIT_CLIENT_ID!,
   clientSecret: process.env.REDDIT_CLIENT_SECRET!,
-  username: process.env.REDDIT_USERNAME!,
-  password: process.env.REDDIT_PASSWORD!,
   userAgent: process.env.REDDIT_USER_AGENT || 'reddit-mcp-server/1.0.0'
 };
 
